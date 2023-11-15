@@ -28,19 +28,30 @@ function App() {
   //axios error handling / async await
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
     async function fetchData() {
       try {
         const { data } = await axios.get(
-          `  https://rickandmortyapi.com/api/character/?name=${query}`
+          `  https://rickandmortyapi.com/api/character/?name=${query}`,
+          { signal }
         );
 
         setCharacters(data.results.slice(0, 5));
       } catch (error) {
-        console.log(error.response.data.error);
-        setCharacters([]);
+        if (!axios.isCancel()) {
+          console.log(error.response.data.error);
+          setCharacters([]);
+        }
       }
     }
+
     fetchData();
+
+    return () => {
+      console.log("abort");
+      controller.abort();
+    };
   }, [query]);
 
   // useEffect(() => {
