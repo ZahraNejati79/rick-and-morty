@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
-const CharacterDetail = ({ selectedId }) => {
+const CharacterDetail = ({ selectedId, onAddFavorite, isAddToFavorite }) => {
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [episodes, setEpisodes] = useState([]);
   useEffect(() => {
@@ -55,8 +55,17 @@ const CharacterDetail = ({ selectedId }) => {
             <p>Last konw location</p>
             <p>{selectedCharacter.location.name}</p>
           </div>
-          <div className="action">
-            <button className="btn btn--primary">Add to Favorit</button>
+          <div className="actions">
+            {isAddToFavorite ? (
+              <p>Already Added To Favorite</p>
+            ) : (
+              <button
+                onClick={() => onAddFavorite(selectedCharacter)}
+                className="btn btn--primary"
+              >
+                Add to Favorit
+              </button>
+            )}
           </div>
         </div>
       </div>

@@ -9,6 +9,8 @@ function App() {
   const [characters, setCharacters] = useState([]);
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(1);
+  const [favorits, setFavorits] = useState([]);
+
   // useEffect(() => {
   //   async function fetchData() {
   //     try {
@@ -65,19 +67,32 @@ function App() {
     setSelectedId(id);
   };
 
+  const handleAddFavorite = (character) => {
+    setFavorits((prevCharacters) => [...prevCharacters, character]);
+  };
+
+  const isAddToFavorite = favorits
+    .map((favorite) => favorite.id)
+    .includes(selectedId);
+
   return (
     <div className="app">
       <Navbar
         characters={characters.length}
         query={query}
         setQuery={setQuery}
+        numOfFavorite={favorits.length}
       />
       <div className="main">
         <CharacterList
           characters={characters}
           onSelecteCharacter={handleSelectCharacter}
         />
-        <CharacterDetail selectedId={selectedId} />
+        <CharacterDetail
+          selectedId={selectedId}
+          onAddFavorite={handleAddFavorite}
+          isAddToFavorite={isAddToFavorite}
+        />
       </div>
     </div>
   );
