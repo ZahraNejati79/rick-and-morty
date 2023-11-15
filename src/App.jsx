@@ -7,7 +7,7 @@ import axios from "axios";
 
 function App() {
   const [characters, setCharacters] = useState([]);
-
+  const [query, setQuery] = useState("");
   // useEffect(() => {
   //   async function fetchData() {
   //     try {
@@ -22,13 +22,13 @@ function App() {
   //   fetchData();
   // }, []);
 
-  //axios error handeling / async await
+  //axios error handling / async await
 
   useEffect(() => {
     async function fetchData() {
       try {
         const { data } = await axios.get(
-          "https://rickandmortyapi.com/api/characterr"
+          `  https://rickandmortyapi.com/api/character/?name=${query}`
         );
         setCharacters(data.results);
       } catch (error) {
@@ -36,8 +36,8 @@ function App() {
       }
     }
     fetchData();
-  }, []);
-
+  }, [query]);
+  console.log(query);
   // useEffect(() => {
   //   fetch("https://rickandmortyapi.com/api/character")
   //     .then((res) => {
@@ -48,7 +48,7 @@ function App() {
   //     .catch((err) => console.log(err.message));
   // }, []);
 
-  //axios / then catch / error handeling
+  //axios / then catch / error handling
   // useEffect(() => {
   //   axios
   //     .get("https://rickandmortyapi.com/api/characterr")
@@ -60,7 +60,11 @@ function App() {
 
   return (
     <div className="app">
-      <Navbar />
+      <Navbar
+        characters={characters.length}
+        query={query}
+        setQuery={setQuery}
+      />
       <div className="main">
         <CharacterList characters={characters} />
         <CharacterDetail />
