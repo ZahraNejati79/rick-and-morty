@@ -1,30 +1,59 @@
-import { character, episodes } from "../../data/data";
+import { useEffect, useState } from "react";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
-const CharacterDetail = () => {
+import axios from "axios";
+const CharacterDetail = ({ selectedId }) => {
+  const [selectedCharacter, setSelectedCharacter] = useState(null);
+  const [episodes, setEpisodes] = useState([]);
+  useEffect(() => {
+    async function fetchSelectedCharacter() {
+      try {
+        const { data } = await axios.get(
+          `https://rickandmortyapi.com/api/character/${selectedId}`
+        );
+        setSelectedCharacter(data);
+
+        const episodesId = data.episode.map((e) => e.split("/").at(-1));
+        const { data: episodesData } = await axios.get(
+          `https://rickandmortyapi.com/api/episode/${episodesId}`
+        );
+        setEpisodes([episodesData].flat().slice(0, 6));
+      } catch (error) {
+        console.log(error.response.data.error);
+      }
+    }
+    fetchSelectedCharacter();
+  }, [selectedId]);
+
+  if (!selectedCharacter)
+    return (
+      <div style={{ color: "var(--slate-300)" }}>please select character</div>
+    );
   return (
     <div style={{ flex: 1 }}>
       <div className="character-detail">
         <img
-          src={character.image}
-          alt={character.name}
+          src={selectedCharacter.image}
+          alt={selectedCharacter.name}
           className="character-detail__img"
         />
         <div className="character-detail__info">
           <h3 className="name">
-            <span>{character.gender === "Male" ? "" : ""}</span>
-            <span>{character.name}</span>
+            <span>{selectedCharacter.gender === "Male" ? "" : ""}</span>
+            <span>{selectedCharacter.name}</span>
           </h3>
           <div className="info">
             <span
-              className={`status ${character.status === "Dead" ? "red" : ""}`}
+              className={`status ${
+                selectedCharacter.status === "Dead" ? "red" : ""
+              }`}
             ></span>
             <span>
-              &nbsp;{character.status} - {character.species}
+              &nbsp;{selectedCharacter.status} - {selectedCharacter.species}
             </span>
           </div>
           <div className="location">
             <p>Last konw location</p>
-            <p>{character.location.name}</p>
+            <p>{selectedCharacter.location.name}</p>
           </div>
           <div className="action">
             <button className="btn btn--primary">Add to Favorit</button>
@@ -40,7 +69,7 @@ const CharacterDetail = () => {
         </div>
         <ul>
           {episodes.map((item, index) => (
-            <li key={item.id}>
+            <li key={index}>
               <div>
                 {String(index + 1).padStart(2, "0")} - {item.episode} :
                 <strong> {item.name}</strong>
