@@ -4,12 +4,15 @@ import Navbar from "./components/Navbar";
 import CharacterDetail from "./components/CharacterDetail";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Modal from "./components/Modal";
 
 function App() {
   const [characters, setCharacters] = useState([]);
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(1);
-  const [favorits, setFavorits] = useState([]);
+  const [favorits, setFavorits] = useState(
+    () => JSON.parse(localStorage.getItem("FAVORITES")) || []
+  );
 
   // useEffect(() => {
   //   async function fetchData() {
@@ -74,12 +77,20 @@ function App() {
   //     .catch((error) => console.log(error.response.data.error));
   // }, []);
 
+  useEffect(() => {
+    localStorage.setItem("FAVORITES", JSON.stringify(favorits));
+  }, [favorits]);
+
   const handleSelectCharacter = (id) => {
     setSelectedId(id);
   };
 
   const handleAddFavorite = (character) => {
     setFavorits((prevCharacters) => [...prevCharacters, character]);
+  };
+
+  const handleDeleteFavorite = (id) => {
+    setFavorits((prevFav) => prevFav.filter((item) => item.id !== id));
   };
 
   const isAddToFavorite = favorits
@@ -92,7 +103,8 @@ function App() {
         characters={characters.length}
         query={query}
         setQuery={setQuery}
-        numOfFavorite={favorits.length}
+        favorites={favorits}
+        onDeleteFavorite={handleDeleteFavorite}
       />
       <div className="main">
         <CharacterList
