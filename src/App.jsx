@@ -5,10 +5,11 @@ import CharacterDetail from "./components/CharacterDetail";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Modal from "./components/Modal";
+import useCharacters from "./hooks/useCharacters";
 
 function App() {
-  const [characters, setCharacters] = useState([]);
   const [query, setQuery] = useState("");
+  const { characters } = useCharacters(query);
   const [selectedId, setSelectedId] = useState(1);
   const [favorits, setFavorits] = useState(
     () => JSON.parse(localStorage.getItem("FAVORITES")) || []
@@ -29,33 +30,6 @@ function App() {
   // }, []);
 
   //axios error handling / async await
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
-    async function fetchData() {
-      try {
-        const { data } = await axios.get(
-          `  https://rickandmortyapi.com/api/character/?name=${query}`,
-          { signal }
-        );
-
-        setCharacters(data.results.slice(0, 5));
-      } catch (error) {
-        if (!axios.isCancel()) {
-          console.log(error.response.data.error);
-          setCharacters([]);
-        }
-      }
-    }
-
-    fetchData();
-
-    return () => {
-      console.log("abort");
-      controller.abort();
-    };
-  }, [query]);
 
   // useEffect(() => {
   //   fetch("https://rickandmortyapi.com/api/character")
