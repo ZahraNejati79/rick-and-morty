@@ -2,18 +2,15 @@ import "./App.css";
 import CharacterList from "./components/CharacterList";
 import Navbar from "./components/Navbar";
 import CharacterDetail from "./components/CharacterDetail";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import Modal from "./components/Modal";
+import { useState } from "react";
 import useCharacters from "./hooks/useCharacters";
+import useLocalStorage from "./hooks/useLocalStorage";
 
 function App() {
   const [query, setQuery] = useState("");
   const { characters } = useCharacters(query);
   const [selectedId, setSelectedId] = useState(1);
-  const [favorits, setFavorits] = useState(
-    () => JSON.parse(localStorage.getItem("FAVORITES")) || []
-  );
+  const [favorites, setFavorites] = useLocalStorage("FAVORITES", []);
 
   // useEffect(() => {
   //   async function fetchData() {
@@ -51,23 +48,19 @@ function App() {
   //     .catch((error) => console.log(error.response.data.error));
   // }, []);
 
-  useEffect(() => {
-    localStorage.setItem("FAVORITES", JSON.stringify(favorits));
-  }, [favorits]);
-
   const handleSelectCharacter = (id) => {
     setSelectedId(id);
   };
 
   const handleAddFavorite = (character) => {
-    setFavorits((prevCharacters) => [...prevCharacters, character]);
+    setFavorites((prevCharacters) => [...prevCharacters, character]);
   };
 
   const handleDeleteFavorite = (id) => {
-    setFavorits((prevFav) => prevFav.filter((item) => item.id !== id));
+    setFavorites((prevFav) => prevFav.filter((item) => item.id !== id));
   };
 
-  const isAddToFavorite = favorits
+  const isAddToFavorite = favorites
     .map((favorite) => favorite.id)
     .includes(selectedId);
 
@@ -77,7 +70,7 @@ function App() {
         characters={characters.length}
         query={query}
         setQuery={setQuery}
-        favorites={favorits}
+        favorites={favorites}
         onDeleteFavorite={handleDeleteFavorite}
       />
       <div className="main">
